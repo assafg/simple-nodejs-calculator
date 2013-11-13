@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Calculator</title>
+</head>
+<body>
+        <div>
+            <input type="number" name="a" id="a">
+            <select name="operator" id="operator">
+                <option>Select Operator</option>
+            </select>
+            <input type="number" name="b" id="b">
+        </div>
+        <div>
+            <button id="calc">Calculate</button>
+        </div>
+        <div id="result"></div>
+    <script src="/bower_components/jquery/jquery.min.js"></script>
+
+    <script>
+        function loadOperators(){
+            $.get('/operators', function(data){
+                var el = $('#operator');
+                if(data){
+                    for(var i=0;i<data.length;i++){
+                        el.append(['<option value="', data[i],'">',data[i], '</option>'].join(''));
+                    }
+                }
+            })
+        }
+
+        function calculate() {
+            var data = {
+                values:[$('#a').val(), $('#b').val()],
+                op:$('#operator').val()
+            }
+            var results = $('#result');
+            results.html('Waiting...');
+            $.ajax({
+                type: 'POST',
+                url: '/calculate',
+                data: data,
+                success: function (data) {
+                    results.html(data.result);
+                }
+
+            });
+        }
+
+        $(document).ready(function(){
+            loadOperators();
+            $('#calc').on('click', calculate);
+        });
+    </script>
+</body>
+</html>
